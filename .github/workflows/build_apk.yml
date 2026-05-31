@@ -16,6 +16,7 @@ jobs:
       ANDROID_HOME: /home/runner/android-sdk
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
       PATH: /home/runner/android-sdk/cmdline-tools/latest/bin:$PATH
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout code
@@ -29,7 +30,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk-headless unzip zip libncurses5 libstdc++6 libffi-dev
+          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses5 libstdc++6 libffi-dev
 
       - name: Install Android SDK command line tools
         run: |
