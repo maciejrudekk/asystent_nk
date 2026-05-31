@@ -15,13 +15,14 @@ jobs:
       ANDROID_SDK_ROOT: /home/runner/android-sdk
       ANDROID_HOME: /home/runner/android-sdk
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
+      PATH: /home/runner/android-sdk/cmdline-tools/latest/bin:$PATH
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -36,8 +37,12 @@ jobs:
           cd $ANDROID_SDK_ROOT
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools.zip
-          mkdir -p cmdline-tools
-          mv cmdline-tools cmdline-tools/latest
+          mkdir -p cmdline-tools/latest
+          for entry in cmdline-tools/*; do
+            if [ "$entry" != "cmdline-tools/latest" ]; then
+              mv "$entry" cmdline-tools/latest/ || true
+            fi
+          done
           export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
           yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
           sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0" "ndk;21.3.6528147" "cmdline-tools;latest"
