@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
-      ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
-      ANDROID_HOME: ${{ runner.temp }}/android-sdk
-      ANDROID_NDK_ROOT: ${{ runner.temp }}/android-sdk/ndk/21.3.6528147
-      PATH: ${{ runner.temp }}/android-sdk/cmdline-tools/latest/bin:${{ env.PATH }}
+      ANDROID_SDK_ROOT: /home/runner/android-sdk
+      ANDROID_HOME: /home/runner/android-sdk
+      ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
+      PATH: /home/runner/android-sdk/cmdline-tools/latest/bin:${{ env.PATH }}
 
     steps:
       - name: Checkout code
