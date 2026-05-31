@@ -15,7 +15,6 @@ jobs:
       ANDROID_SDK_ROOT: /home/runner/android-sdk
       ANDROID_HOME: /home/runner/android-sdk
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
-      PATH: /home/runner/android-sdk/cmdline-tools/latest/bin:${{ env.PATH }}
 
     steps:
       - name: Checkout code
@@ -39,6 +38,7 @@ jobs:
           unzip -q commandlinetools.zip
           mkdir -p cmdline-tools
           mv cmdline-tools cmdline-tools/latest
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
           yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
           sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0" "ndk;21.3.6528147" "cmdline-tools;latest"
 
