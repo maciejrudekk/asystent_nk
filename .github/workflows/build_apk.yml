@@ -1,0 +1,67 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install buildozer cython kivy
+      
+      - name: Install Android tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk openjdk-11-jdk-headless android-sdk
+      
+      - name: Build APK
+        run: |
+          buildozer android debug
+        env:
+          ANDROID_SDK_ROOT: /usr/lib/android-sdk
+          ANDROID_NDK_ROOT: /usr/lib/android-sdk/ndk/21.3.6528147
+      
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-build
+          path: bin/*.apk
+          retention-days: 30
+      
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      
+      - name: Upload Release Asset
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/*.apk
+          asset_name: Asystent-NK-v${{ github.ref }}.apk
+          asset_content_type: application/vnd.android.package-archive
