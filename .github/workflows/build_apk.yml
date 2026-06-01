@@ -26,7 +26,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses6 libstdc++6 libffi-dev
+          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses6 libstdc++6 libffi-dev autoconf automake libtool pkg-config build-essential
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -63,23 +63,6 @@ jobs:
             "cmdline-tools;latest" \
             "extras;google;m2repository" \
             "extras;android;m2repository"
-
-      - name: Accept Android SDK licenses
-        run: |
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
-          export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
-          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
-          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install \
-            "platform-tools" \
-            "platforms;android-33" \
-            "build-tools;33.0.0" \
-            "build-tools;37.0.0" \
-            "ndk;21.3.6528147" \
-            "cmdline-tools;latest" \
-            "extras;google;m2repository" \
-            "extras;android;m2repository"
-          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
 
       - name: Link buildozer SDK path
         run: |
