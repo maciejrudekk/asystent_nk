@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
       ANDROID_SDK_ROOT: /home/runner/android-sdk
@@ -67,7 +67,6 @@ jobs:
             "build-tools;33.0.0" \
             "build-tools;37.0.0" \
             "ndk;21.3.6528147" \
-            "ndk;25.2.9519653" \
             "cmdline-tools;latest" \
             "extras;google;m2repository" \
             "extras;android;m2repository"
@@ -81,14 +80,20 @@ jobs:
           rm -rf /home/runner/.buildozer/android/platform/android-ndk-r28c
           ln -s "$ANDROID_SDK_ROOT" /home/runner/.buildozer/android/platform/android-sdk
           ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r21e
-          ln -s "$ANDROID_SDK_ROOT/ndk/25.2.9519653" /home/runner/.buildozer/android/platform/android-ndk-r25b
-          # Some toolchains expect r28c; point it to the installed r25 to avoid fallback downloads
-          ln -s "$ANDROID_SDK_ROOT/ndk/25.2.9519653" /home/runner/.buildozer/android/platform/android-ndk-r28c
+          ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r25b
+          ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r28c
+          echo "ANDROID_NDK_ROOT=/home/runner/.buildozer/android/platform/android-ndk-r21e" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=/home/runner/.buildozer/android/platform/android-ndk-r21e" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK=/home/runner/.buildozer/android/platform/android-ndk-r21e" >> "$GITHUB_ENV"
+          echo "ANDROIDNDK=/home/runner/.buildozer/android/platform/android-ndk-r21e" >> "$GITHUB_ENV"
+          ls -la /home/runner/.buildozer/android/platform
+          readlink -f /home/runner/.buildozer/android/platform/android-ndk-r21e || true
+          readlink -f /home/runner/.buildozer/android/platform/android-ndk-r28c || true
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install --upgrade buildozer cython kivy python-for-android
+          pip install --upgrade buildozer==1.8.1 cython kivy python-for-android
 
       - name: Debug autotools and m4 availability
         run: |
