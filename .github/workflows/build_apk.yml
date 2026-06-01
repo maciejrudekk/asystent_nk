@@ -17,6 +17,7 @@ jobs:
       ANDROID_SDK_HOME: /home/runner/.android
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
       ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/21.3.6528147
+      ANDROID_NDK: /home/runner/android-sdk/ndk/21.3.6528147
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -26,7 +27,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses6 libstdc++6 libffi-dev autoconf automake libtool pkg-config build-essential
+          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses6 libstdc++6 libffi-dev autoconf automake libtool libtool-bin autoconf-archive gettext pkg-config build-essential
 
       - name: Set up Python
         uses: actions/setup-python@v5
