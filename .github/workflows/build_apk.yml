@@ -19,17 +19,17 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses6 libstdc++6 libffi-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses5 libstdc++6 libffi-dev
 
       - name: Install Android SDK command line tools
         run: |
