@@ -15,7 +15,6 @@ jobs:
       ANDROID_SDK_ROOT: /home/runner/android-sdk
       ANDROID_HOME: /home/runner/android-sdk
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
-      PATH: /home/runner/android-sdk/cmdline-tools/latest/bin:$PATH
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
