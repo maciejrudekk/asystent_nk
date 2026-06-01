@@ -16,6 +16,7 @@ jobs:
       ANDROID_HOME: /home/runner/android-sdk
       ANDROID_SDK_HOME: /home/runner/.android
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
+      ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/21.3.6528147
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -65,7 +66,24 @@ jobs:
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
+          export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
           yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.0" \
+            "build-tools;37.0.0" \
+            "ndk;21.3.6528147" \
+            "cmdline-tools;latest" \
+            "extras;google;m2repository" \
+            "extras;android;m2repository"
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
+
+      - name: Link buildozer SDK path
+        run: |
+          mkdir -p /home/runner/.buildozer/android/platform
+          rm -rf /home/runner/.buildozer/android/platform/android-sdk
+          ln -s "$ANDROID_SDK_ROOT" /home/runner/.buildozer/android/platform/android-sdk
 
       - name: Install Python dependencies
         run: |
