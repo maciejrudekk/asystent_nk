@@ -15,10 +15,10 @@ jobs:
       ANDROID_SDK_ROOT: /home/runner/android-sdk
       ANDROID_HOME: /home/runner/android-sdk
       ANDROID_SDK_HOME: /home/runner/.android
-      ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
-      ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/21.3.6528147
-      ANDROID_NDK: /home/runner/android-sdk/ndk/21.3.6528147
-      ANDROIDNDK: /home/runner/android-sdk/ndk/21.3.6528147
+      ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/25.2.9519653
+      ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/25.2.9519653
+      ANDROID_NDK: /home/runner/android-sdk/ndk/25.2.9519653
+      ANDROIDNDK: /home/runner/android-sdk/ndk/25.2.9519653
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -62,6 +62,7 @@ jobs:
             "build-tools;33.0.0" \
             "build-tools;37.0.0" \
             "ndk;21.3.6528147" \
+            "ndk;25.2.9519653" \
             "cmdline-tools;latest" \
             "extras;google;m2repository" \
             "extras;android;m2repository"
@@ -71,10 +72,12 @@ jobs:
           mkdir -p /home/runner/.buildozer/android/platform
           rm -rf /home/runner/.buildozer/android/platform/android-sdk
           rm -rf /home/runner/.buildozer/android/platform/android-ndk-r21e
+          rm -rf /home/runner/.buildozer/android/platform/android-ndk-r25b
           rm -rf /home/runner/.buildozer/android/platform/android-ndk-r28c
           ln -s "$ANDROID_SDK_ROOT" /home/runner/.buildozer/android/platform/android-sdk
-          ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r21e
-          ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r28c
+          ln -s "$ANDROID_SDK_ROOT/ndk/25.2.9519653" /home/runner/.buildozer/android/platform/android-ndk-r25b
+          # Some toolchains expect r28c; point it to the installed r25 to avoid fallback downloads
+          ln -s "$ANDROID_SDK_ROOT/ndk/25.2.9519653" /home/runner/.buildozer/android/platform/android-ndk-r28c
 
       - name: Install Python dependencies
         run: |
