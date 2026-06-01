@@ -18,6 +18,7 @@ jobs:
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
       ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/21.3.6528147
       ANDROID_NDK: /home/runner/android-sdk/ndk/21.3.6528147
+      ANDROIDNDK: /home/runner/android-sdk/ndk/21.3.6528147
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -27,7 +28,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses6 libstdc++6 libffi-dev autoconf automake libtool libtool-bin autoconf-archive gettext pkg-config build-essential
+          sudo apt-get install -y openjdk-11-jdk-headless unzip zip tar libncurses6 libstdc++6 libffi-dev autoconf automake libtool libtool-bin autoconf-archive gettext pkg-config build-essential m4 bison
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -70,8 +71,10 @@ jobs:
           mkdir -p /home/runner/.buildozer/android/platform
           rm -rf /home/runner/.buildozer/android/platform/android-sdk
           rm -rf /home/runner/.buildozer/android/platform/android-ndk-r21e
+          rm -rf /home/runner/.buildozer/android/platform/android-ndk-r28c
           ln -s "$ANDROID_SDK_ROOT" /home/runner/.buildozer/android/platform/android-sdk
           ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r21e
+          ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r28c
 
       - name: Install Python dependencies
         run: |
