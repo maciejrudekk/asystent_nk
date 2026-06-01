@@ -15,10 +15,10 @@ jobs:
       ANDROID_SDK_ROOT: /home/runner/android-sdk
       ANDROID_HOME: /home/runner/android-sdk
       ANDROID_SDK_HOME: /home/runner/.android
-      ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/25.2.9519653
-      ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/25.2.9519653
-      ANDROID_NDK: /home/runner/android-sdk/ndk/25.2.9519653
-      ANDROIDNDK: /home/runner/android-sdk/ndk/25.2.9519653
+      ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
+      ANDROID_NDK_HOME: /home/runner/android-sdk/ndk/21.3.6528147
+      ANDROID_NDK: /home/runner/android-sdk/ndk/21.3.6528147
+      ANDROIDNDK: /home/runner/android-sdk/ndk/21.3.6528147
       ACLOCAL_FLAGS: -I /usr/share/aclocal -I /usr/local/share/aclocal
       AUTOMAKE_OPTIONS: --add-missing
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -80,6 +80,7 @@ jobs:
           rm -rf /home/runner/.buildozer/android/platform/android-ndk-r25b
           rm -rf /home/runner/.buildozer/android/platform/android-ndk-r28c
           ln -s "$ANDROID_SDK_ROOT" /home/runner/.buildozer/android/platform/android-sdk
+          ln -s "$ANDROID_SDK_ROOT/ndk/21.3.6528147" /home/runner/.buildozer/android/platform/android-ndk-r21e
           ln -s "$ANDROID_SDK_ROOT/ndk/25.2.9519653" /home/runner/.buildozer/android/platform/android-ndk-r25b
           # Some toolchains expect r28c; point it to the installed r25 to avoid fallback downloads
           ln -s "$ANDROID_SDK_ROOT/ndk/25.2.9519653" /home/runner/.buildozer/android/platform/android-ndk-r28c
