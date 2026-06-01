@@ -14,6 +14,7 @@ jobs:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
       ANDROID_SDK_ROOT: /home/runner/android-sdk
       ANDROID_HOME: /home/runner/android-sdk
+      ANDROID_SDK_HOME: /home/runner/.android
       ANDROID_NDK_ROOT: /home/runner/android-sdk/ndk/21.3.6528147
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -33,26 +34,36 @@ jobs:
 
       - name: Install Android SDK command line tools
         run: |
-          mkdir -p $ANDROID_SDK_ROOT
-          cd $ANDROID_SDK_ROOT
+          mkdir -p "$ANDROID_SDK_ROOT"
+          cd "$ANDROID_SDK_ROOT"
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools.zip
           mkdir -p cmdline-tools/latest
-          for entry in cmdline-tools/*; do
-            if [ "$entry" != "cmdline-tools/latest" ]; then
-              mv "$entry" cmdline-tools/latest/ || true
-            fi
-          done
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
-          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
-          sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0" "ndk;21.3.6528147" "cmdline-tools;latest"
+          if [ -d cmdline-tools/cmdline-tools ]; then
+            mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/
+          else
+            mv cmdline-tools/* cmdline-tools/latest/ || true
+          fi
+          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.0" \
+            "build-tools;37.0.0" \
+            "ndk;21.3.6528147" \
+            "cmdline-tools;latest" \
+            "extras;google;m2repository" \
+            "extras;android;m2repository"
 
       - name: Accept Android SDK licenses
         run: |
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
           mkdir -p ~/.android
-          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
           touch ~/.android/repositories.cfg
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses
 
       - name: Install Python dependencies
         run: |
