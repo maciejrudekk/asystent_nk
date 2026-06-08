@@ -40,6 +40,16 @@ def main(page: ft.Page):
     
     wybrana_teczka_id = None
     tryb_kalendarza = None 
+    
+    # === MAGIA PRZYCISKU WSTECZ (Android) ===
+    def systemowy_przycisk_wstecz(e):
+        """Obsługuje przycisk wstecz na Androidzie"""
+        if len(page.views) > 1:
+            page.views.pop()
+            page.update()
+    
+    # Podpinamy event dla przycisku wstecz
+    page.on_view_pop = systemowy_przycisk_wstecz
 
     # --- WSPÓLNY KALENDARZ ---
     def na_zmiane_daty(e):
@@ -82,25 +92,31 @@ def main(page: ft.Page):
     # ==========================================
 
     def pokaz_menu(e=None):
-        page.clean()
-        page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-        page.add(
-            ft.Container(height=50),
-            ft.Text("Asystent Dzielnicowego", size=30, weight="bold", text_align=ft.TextAlign.CENTER),
-            ft.Text("System Obsługi Niebieskiej Karty", size=14, italic=True),
-            ft.Container(height=40),
-            ft.Button("Kreator Nowej Teczki", width=280, height=60, on_click=pokaz_kreator),
-            ft.Container(height=10),
-            ft.Button("Aktywne Procedury", width=280, height=60, on_click=pokaz_aktywne),
-            ft.Container(height=10),
-            ft.Button("Pomoce (Wytyczne nr 3)", width=280, height=60, on_click=pokaz_pomoce)
+        """Wyświetla menu główne"""
+        widok = ft.View(
+            route="/menu",
+            controls=[
+                ft.SafeArea(
+                    content=ft.Column([
+                        ft.Container(height=50),
+                        ft.Text("Asystent Dzielnicowego", size=30, weight="bold", text_align=ft.TextAlign.CENTER),
+                        ft.Text("System Obsługi Niebieskiej Karty", size=14, italic=True, text_align=ft.TextAlign.CENTER),
+                        ft.Container(height=40),
+                        ft.Button("Kreator Nowej Teczki", width=280, height=60, on_click=pokaz_kreator),
+                        ft.Container(height=10),
+                        ft.Button("Aktywne Procedury", width=280, height=60, on_click=pokaz_aktywne),
+                        ft.Container(height=10),
+                        ft.Button("Pomoce (Wytyczne nr 3)", width=280, height=60, on_click=pokaz_pomoce)
+                    ], spacing=0, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                )
+            ]
         )
+        page.views.clear()
+        page.views.append(widok)
         page.update()
 
     def pokaz_kreator(e=None):
-        page.clean()
-        page.horizontal_alignment = ft.CrossAxisAlignment.START
-        
+        """Wyświetla formularz do utworzenia nowej teczki"""
         nr_input = ft.TextField(label="Numer JED", width=300)
         data_input = ft.TextField(label="Data wszczęcia (RRRR-MM-DD)", value=datetime.now().strftime("%Y-%m-%d"), width=300)
         
@@ -149,26 +165,32 @@ def main(page: ft.Page):
             except Exception as exc:
                 show_snack(f"Błąd zapisu: {exc}", color="red")
 
-        page.add(
-            ft.Button("Powrót do menu głównego", on_click=pokaz_menu),
-            ft.Divider(),
-            ft.Text("Nowa Teczka NK", size=25, weight="bold"),
-            nr_input, 
-            data_input,
-            tekst_bledu,
-            ft.Container(height=10),
-            ft.Text("Ankieta początkowa (zaznacz właściwe):", weight="bold", size=16),
-            cb_nkb, cb_ofiara_maloletnia, cb_sprawca_nieletni, cb_policjant,
-            cb_bron, cb_zatrzymany_bron, cb_zolnierz, cb_nakaz_pol, cb_nakaz_sad, nr_nakazu_input, freq_input,
-            ft.Container(height=20),
-            ft.Button("Zapisz Teczkę", on_click=zapisz_z_kreatora, color="white", bgcolor="green", height=50)
+        widok = ft.View(
+            route="/kreator",
+            controls=[
+                ft.SafeArea(
+                    content=ft.Column([
+                        ft.Row([ft.Button("Powrót do menu głównego", on_click=pokaz_menu)]),
+                        ft.Divider(),
+                        ft.Text("Nowa Teczka NK", size=25, weight="bold"),
+                        nr_input, 
+                        data_input,
+                        tekst_bledu,
+                        ft.Container(height=10),
+                        ft.Text("Ankieta początkowa (zaznacz właściwe):", weight="bold", size=16),
+                        cb_nkb, cb_ofiara_maloletnia, cb_sprawca_nieletni, cb_policjant,
+                        cb_bron, cb_zatrzymany_bron, cb_zolnierz, cb_nakaz_pol, cb_nakaz_sad, nr_nakazu_input, freq_input,
+                        ft.Container(height=20),
+                        ft.Button("Zapisz Teczkę", on_click=zapisz_z_kreatora, color="white", bgcolor="green", height=50)
+                    ], scroll="auto")
+                )
+            ]
         )
+        page.views.append(widok)
         page.update()
 
     def pokaz_aktywne(e=None):
-        page.clean()
-        page.horizontal_alignment = ft.CrossAxisAlignment.START
-        
+        """Wyświetla listę aktywnych procedur"""
         rows = []
         for row in db.pobierz_wszystkie():
             historia = db.pobierz_historie(row[0])
@@ -225,26 +247,35 @@ def main(page: ft.Page):
 
         tabela_przewijana = ft.Row(controls=[tabela], scroll="always")
 
-        page.add(
-            ft.Button("Powrót do menu głównego", on_click=pokaz_menu),
-            ft.Divider(),
-            ft.Text("Aktywne procedury", size=25, weight="bold"),
-            tabela_przewijana if rows else ft.Text("Brak aktywnych procedur.", italic=True, size=16)
+        widok = ft.View(
+            route="/aktywne",
+            controls=[
+                ft.SafeArea(
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Button("Menu główne", on_click=pokaz_menu)
+                        ]),
+                        ft.Divider(),
+                        ft.Text("Aktywne procedury", size=25, weight="bold"),
+                        tabela_przewijana if rows else ft.Text("Brak aktywnych procedur.", italic=True, size=16)
+                    ], scroll="auto")
+                )
+            ]
         )
+        page.views.clear()
+        page.views.append(widok)
         page.update()
 
     def pokaz_pomoce(e=None):
-        page.clean()
-        page.horizontal_alignment = ft.CrossAxisAlignment.START
-
+        """Wyświetla wytyczne i pomoce"""
         pdf_help = None
         for pdf_path in Path.cwd().glob("*.pdf"):
             if "wytycz" in pdf_path.name.lower() or "wytyczne" in pdf_path.name.lower():
                 pdf_help = pdf_path
                 break
 
-        page.add(
-            ft.Button("Powrót do menu głównego", on_click=pokaz_menu),
+        pomoce_controls = [
+            ft.Row([ft.Button("Menu główne", on_click=pokaz_menu)]),
             ft.Divider(),
             ft.Text("Pomoce i Wytyczne", size=25, weight="bold"),
             ft.Text("Wytyczne nr 3 Komendanta Głównego Policji", weight="bold", size=18),
@@ -267,7 +298,7 @@ def main(page: ft.Page):
             ft.Text("- informacje o kontaktach ze świadkami, członkach rodziny, służbach społecznych oraz innymi instytucjami."),
             ft.Text("- dokumenty dotyczące skierowania sprawy do GOPS lub Komisji ds. Alkoholowych oraz kopie wysłanych wniosków."),
             ft.Text("- harmonogram kontroli częstotliwości, terminy kolejnych wizyt oraz adnotacje o nieobecnościach."),
-            ft.Text("- wyniki ustaleń podjętych działań pomocowych i środków ochrony.") ,
+            ft.Text("- wyniki ustaleń podjętych działań pomocowych i środków ochrony."),
             ft.Text("- Nie umieszczaj w teczce: protokołów grupy diagnostyczno-pomocowej, dokumentacji postępowania przygotowawczego, kopii NK-C i NK-D oraz dokumentów objętych tajemnicą inną niż policja."),
             ft.Container(height=10),
             ft.Text("Kiedy składać wniosek do GOPS:", weight="bold"),
@@ -291,25 +322,29 @@ def main(page: ft.Page):
             ft.Text("- Jeśli doręczenie dokumentów nie było możliwe, zostaw pisemne zawiadomienie i wpisz to do teczki."),
             ft.Text("- Ustal częstotliwość kontroli, zaktualizuj termin wizyt i zapisuj wyniki każdej interwencji."),
             ft.Text("- Monitoruj, czy sprawca stosuje się do nakazu/zakazu i czy osoba pokrzywdzona otrzymała odpowiednie wsparcie."),
-            ft.Container(height=20),
-        )
+        ]
 
-        if pdf_help:
-            # Na Windowsie/Linuksie: przycisk do otwarcia PDF
-            if platform.system() in ["Windows", "Linux", "Darwin"]:
-                page.add(
-                    ft.Button("Otwórz wytyczne PDF", on_click=lambda e: os.startfile(str(pdf_help)), width=250, bgcolor="#2E7D32", color="white")
-                )
-            else:
-                # Na Androidzie: informacja że PDF jest w aplikacji
-                page.add(
-                    ft.Text("📄 Pełne wytyczne PDF są zabudowane w aplikacji.", color="#2E7D32", weight="bold")
-                )
-        else:
-            page.add(
-                ft.Text("Umieść plik PDF z wytycznymi w katalogu projektu, np. wytyczne nr3 KGP.pdf.", color="grey")
+        if pdf_help and platform.system() in ["Windows", "Linux", "Darwin"]:
+            pomoce_controls.append(ft.Container(height=20))
+            pomoce_controls.append(
+                ft.Button("Otwórz wytyczne PDF", on_click=lambda e: os.startfile(str(pdf_help)), width=250, bgcolor="#2E7D32", color="white")
+            )
+        elif not pdf_help:
+            pomoce_controls.append(ft.Container(height=20))
+            pomoce_controls.append(
+                ft.Text("Umieść plik PDF z wytycznami w katalogu projektu, np. wytyczne nr3 KGP.pdf.", color="grey")
             )
 
+        widok = ft.View(
+            route="/pomoce",
+            controls=[
+                ft.SafeArea(
+                    content=ft.Column(pomoce_controls, scroll="auto")
+                )
+            ]
+        )
+        page.views.clear()
+        page.views.append(widok)
         page.update()
 
     def otworz_edytuj_nakaz(t):
@@ -382,18 +417,11 @@ def main(page: ft.Page):
 
     # Strona/zakładka do edycji nakazu/zakazu (pełny widok z informacjami)
     def pokaz_edytuj_nakaz_page(teczka):
+        """Wyświetla stronę do edycji nakazu/zakazu"""
         # odśwież dane
         row = db.pobierz_teczke(teczka.id)
         historia = db.pobierz_historie(teczka.id)
         t = TeczkaNK(row, historia)
-
-        page.clean()
-        page.horizontal_alignment = ft.CrossAxisAlignment.START
-
-        header = ft.Row([
-            ft.Button("Powrót do szczegółów", on_click=lambda e: otworz_szczegoly(t)),
-            ft.Button("Powrót do listy", on_click=pokaz_aktywne)
-        ])
 
         nr_jed = ft.Text(f"Numer JED: {t.nr_jed}", size=16)
         kto = ft.Text(f"Wydano przez: {'Sąd' if t.nakaz_sad else ('Policja' if t.nakaz_policja else 'Brak')}")
@@ -416,70 +444,85 @@ def main(page: ft.Page):
             except Exception as exc:
                 show_snack(f"Błąd zapisu: {exc}", color="red")
 
-        page.add(
-            header,
-            ft.Divider(),
-            ft.Text("Edycja Nakazu / Zakazu", size=20, weight="bold"),
-            nr_jed,
-            kto,
-            cb_pol, cb_sad, nr_field, freq,
-            ft.Row([ft.Button("Zapisz", on_click=zapisz), ft.Button("Anuluj", on_click=lambda e: otworz_szczegoly(t))], spacing=10)
+        widok = ft.View(
+            route="/edytuj_nakaz",
+            controls=[
+                ft.SafeArea(
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Button("Powrót do szczegółów", on_click=lambda e: otworz_szczegoly(t)),
+                            ft.Button("Powrót do listy", on_click=pokaz_aktywne)
+                        ]),
+                        ft.Divider(),
+                        ft.Text("Edycja Nakazu / Zakazu", size=20, weight="bold"),
+                        nr_jed,
+                        kto,
+                        cb_pol, cb_sad, nr_field, freq,
+                        ft.Row([ft.Button("Zapisz", on_click=zapisz), ft.Button("Anuluj", on_click=lambda e: otworz_szczegoly(t))], spacing=10)
+                    ], scroll="auto")
+                )
+            ]
         )
+        page.views.append(widok)
         page.update()
 
     def otworz_szczegoly(teczka):
+        """Wyświetla szczegóły teczki"""
         # rebuild teczka with fresh data and history
         row = db.pobierz_teczke(teczka.id)
         historia = db.pobierz_historie(teczka.id)
         t = TeczkaNK(row, historia)
 
-        page.clean()
-        page.horizontal_alignment = ft.CrossAxisAlignment.START
-
-        header = ft.Row([
-            ft.Button("Powrót do listy", on_click=pokaz_aktywne),
-            ft.Button("Do menu głównego", on_click=pokaz_menu)
-        ])
-
-        sekcja = [
-            header,
-            ft.Divider(),
-            ft.Text(f"Szczegóły JED: {t.nr_jed}", size=20, weight="bold")
-        ]
-
         # Historia wizyt
         wizyty = [h[0] for h in historia if h[1] == 'wizyta']
         kontrole = [h[0] for h in historia if h[1] == 'kontrola']
 
-        sekcja.append(ft.Text("Historia wizyt:", weight="bold"))
+        sekcja = [
+            ft.Row([
+                ft.Button("Powrót do listy", on_click=pokaz_aktywne),
+                ft.Button("Do menu głównego", on_click=pokaz_menu)
+            ]),
+            ft.Divider(),
+            ft.Text(f"Szczegóły JED: {t.nr_jed}", size=20, weight="bold"),
+            ft.Text("Historia wizyt:", weight="bold"),
+        ]
+        
         if wizyty:
             for w in wizyty:
                 sekcja.append(ft.Text(w))
         else:
             sekcja.append(ft.Text("Brak zapisanych wizyt."))
 
-        sekcja.append(ft.Container(height=8))
-
-        sekcja.append(ft.Divider())
-        sekcja.append(ft.Text("Historia kontroli nakazu:", weight="bold"))
+        sekcja.extend([
+            ft.Container(height=8),
+            ft.Divider(),
+            ft.Text("Historia kontroli nakazu:", weight="bold"),
+        ])
+        
         if kontrole:
             for k in kontrole:
                 sekcja.append(ft.Text(k))
         else:
             sekcja.append(ft.Text("Brak zapisanych kontroli."))
 
-        sekcja.append(ft.Container(height=8))
+        sekcja.extend([
+            ft.Container(height=8),
+            ft.Divider(),
+            ft.Text("Nakaz / Zakaz", weight="bold"),
+            ft.Text(f"Aktywny: {'TAK' if t.nakaz_zakaz else 'NIE'}"),
+            ft.Text(f"Numer nakazu/zakazu: {t.nr_nakazu if getattr(t, 'nr_nakazu', None) else 'Brak'}"),
+            ft.Text(f"Częstotliwość kontroli: {t.czestotliwosc} dni"),
+        ])
 
-        sekcja.append(ft.Divider())
-        sekcja.append(ft.Text("Nakaz / Zakaz", weight="bold"))
-        sekcja.append(ft.Text(f"Aktywny: {'TAK' if t.nakaz_zakaz else 'NIE'}"))
-        sekcja.append(ft.Text(f"Numer nakazu/zakazu: {t.nr_nakazu if getattr(t, 'nr_nakazu', None) else 'Brak'}"))
-        sekcja.append(ft.Text(f"Częstotliwość kontroli: {t.czestotliwosc} dni"))
-        sekcja.append(ft.Container(height=8))
-
-        # przyciski edycji nakazu usunięte, zarządzanie nakazami odbywa się z poziomu listy
-
-        page.add(*sekcja)
+        widok = ft.View(
+            route="/szczegoly",
+            controls=[
+                ft.SafeArea(
+                    content=ft.Column(sekcja, scroll="auto")
+                )
+            ]
+        )
+        page.views.append(widok)
         page.update()
 
     # ==========================================
