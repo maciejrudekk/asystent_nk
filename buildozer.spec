@@ -13,7 +13,7 @@ package.domain = org.asystent.nk
 source.dir = .
 
 # (source.include_exts) Source include extensions (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,pdf
+source.include_exts = py,png,jpg,kv,atlas
 
 # (version) Application versioning (method 1)
 version = 1.0.0
@@ -25,6 +25,7 @@ version = 1.0.0
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy,flet,sqlite3
+android.enable_androidx = False
 
 # (str) Supported orientation (landscape, sensorLandscape, portrait or sensorPortrait)
 orientation = portrait
@@ -48,10 +49,10 @@ android.api = 33
 android.minapi = 21
 
 # (int) Android SDK version to use
-#android.sdk = 30
+android.sdk = 33
 
 # (str) Android NDK version to use
-#android.ndk = 21e
+android.ndk = 25b
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
@@ -63,10 +64,10 @@ android.minapi = 21
 #android.copy_libs = 1
 
 # (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
-android.archs = arm64-v8a,armeabi-v7a
+android.archs = arm64-v8a
 
 # (bool) Enable AndroidX support
-android.enable_androidx = True
+#android.enable_androidx = True
 
 # (bool) Add Java classes from .jar files in the libs folder
 #android.add_src =
@@ -86,7 +87,7 @@ android.enable_androidx = True
 #android.add_libs_arm64_v8a = libs/android64/*.so
 
 # (bool) Enable AndroidX support
-android.gradle_dependencies = 
+#android.gradle_dependencies =
 
 # (list) Java files to add to the android project (can be java or a directory)
 #android.add_src =
